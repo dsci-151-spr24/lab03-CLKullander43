@@ -1,11 +1,14 @@
 ---
 title: "Lab 03 - Nobel laureates"
 author: "Caeden Kullander"
-output: 
+output:
+  html_document:
+    df_print: paged
   tufte::tufte_html:
     css: ../lab.css
-    tufte_variant: "envisioned"
+    tufte_variant: envisioned
     highlight: pygments
+  pdf_document: null
 link-citations: true
 ---
 
@@ -222,6 +225,7 @@ There are some observations in this dataset that we will exclude from our analys
 -   laureates who are still alive (their `died_date` is `NA`)
 
 ```{r echo=FALSE}
+#| label: filter
 nobel_living <- nobel %>%
   filter(
     !is.na(country),
@@ -252,6 +256,7 @@ Note that we can achieve the same result using the `fct_other()` function we've 
 ```
 
 ```{r}
+#| label: country-us
 nobel_living <- nobel_living %>%
   mutate(
     country_us = if_else(country == "USA", "USA", "Other")
@@ -261,6 +266,7 @@ nobel_living <- nobel_living %>%
 Next, we will limit our analysis to only the following categories: Physics, Medicine, Chemistry, and Economics.
 
 ```{r}
+#| label: filter-by-category
 nobel_living_science <- nobel_living %>%
   filter(category %in% c("Physics", "Medicine", "Chemistry", "Economics"))
 ```
@@ -276,8 +282,8 @@ This means you'll need to define this data frame in your R Markdown document, ev
     -   Flip the coordinates so the bars are horizontal, not vertical.
 
 ```{r}
+#| label: faceted-bar-plot
 library(ggplot2)
-
 ggplot(data = nobel_living_science, aes(y = country_us)) +
   geom_bar() +
   facet_wrap(~category)
@@ -298,6 +304,7 @@ There are more US nobel prize winners than non-US winners. The article seems to 
     How many of the winners are born in the US?
 
 ```{r}
+#| label: born-country-us
 nobel_living_science <- nobel_living_science %>%
   mutate(
     born_country_us = if_else(born_country == "USA", "USA", "Other")
@@ -317,8 +324,8 @@ nobel_living_science %>%
     -   Each bar should have segments for whether the laureate was born in the US or not.
 
 ```{r}
+#| label: bar-plot-with-birth-country
 library(ggplot2)
-
 ggplot(data = nobel_living_science, aes(y = country_us, fill=born_country_us)) +
   geom_bar() +
   facet_wrap(~category)
@@ -338,6 +345,7 @@ Note that your bar plot won't exactly match the one from the Buzzfeed article. T
 6.  In a single pipeline, filter for laureates who won their prize in the US, but were born outside of the US, and then create a frequency table (with the `count()` function) for their birth country (`born_country`) and arrange the resulting data frame in descending order of number of observations for each country. Which country is the most common?
 
 ```{r}
+#| label: us-lauretes-born-elsewhere
 nobel_living_science %>%
   filter(born_country_us == "Other") %>%
   count(born_country) %>%
